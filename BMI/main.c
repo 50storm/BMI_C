@@ -28,6 +28,7 @@ struct bmi_data_type{
    int fat;
    int thin;
    int normal;
+   int poo;
    double height;
    double weight;
    double bmi;
@@ -37,11 +38,13 @@ struct bmi_data_type{
 struct flg_type{
     int height;
     int weight;
+    int poo;
 };
+
 
 int show_menu(void);
 int is_valid_input(double);
-void showErrMsg(const char * , double );
+void showErrMsg(const char * , double , int);
 
 
 int main(int argc, const char * argv[]) {
@@ -63,7 +66,7 @@ int main(int argc, const char * argv[]) {
 
                 flg.height = is_valid_input(data.height);
                 if(flg.height)break;
-                else showErrMsg("height", data.height);
+                else showErrMsg("height", data.height, 0 );
             }
             
             flg.weight=1;
@@ -73,8 +76,19 @@ int main(int argc, const char * argv[]) {
                 
                 flg.weight = is_valid_input(data.weight);
                 if(flg.weight)break;
-                else showErrMsg("weight",data.weight);
+                else showErrMsg("weight",data.weight, 0 ) ;
            } 
+            
+            flg.poo=1;
+            while (1) {
+                printf("Did you poo today?[yes:1,no:0]:");
+                scanf("%d",&data.poo);
+                
+                flg.poo = is_valid_input(data.poo);
+                if(flg.poo)break;
+                else showErrMsg("poo", 0.0, data.poo);
+           } 
+            
             
             
             
@@ -125,10 +139,18 @@ int is_valid_input(double val){
 
 }
 
-void showErrMsg(const char *msg ,double h){
-    printf("Wrong input:%s:%f \n\n",msg, h);
-
+void showErrMsg(const char *msg , double d_val, int i_val){
+    if( i_val == 0 && d_val !=0.0 )
+    {
+        printf("Wrong input:%s:%f \n\n",msg, d_val);
+    }
+    else if( i_val != 0 && d_val ==0.0 )
+    {
+        printf("Wrong input:%s:%d \n\n",msg, i_val);
+    }
+    
 }
+
 
 
 int show_menu(void){
