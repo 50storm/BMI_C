@@ -21,10 +21,25 @@
 //うんちが3日出てない。便秘注意！
 
 #include <stdio.h>
+#include <time.h>
+#include <string.h>
+
 enum menu {REGISTER = 1 , DISPLAY = 2, EXIT = 9, ERR = -1  };
 
 
 struct bmi_data_type{
+   int year;
+   int month;
+   int day;
+   int hour;
+   int min;
+   int sec;
+   char str_year[5];
+   char str_month[3];
+   char str_day[3];
+   char str_hour[3];
+   char str_min[3];
+   char str_sec[3];
    int fat;
    int thin;
    int normal;
@@ -41,7 +56,7 @@ struct flg_type{
     int poo;
 };
 
-
+/*prototype*/
 int show_menu(void);
 int is_valid_input(double);
 void showErrMsg(const char * , double , int);
@@ -51,14 +66,67 @@ int main(int argc, const char * argv[]) {
     struct bmi_data_type data;
     struct flg_type flg;
 
+    time_t timer;
+    struct tm *local;
+    struct tm *utc;
+
+    /* 現在時刻を取得 */
+    timer = time(NULL);
+    local = localtime(&timer); 
+    printf("%4d/", local->tm_year + 1900);
+    printf("%2d/", local->tm_mon + 1);
+    printf("%2d ", local->tm_mday);
+    printf("%2d:", local->tm_hour);
+    printf("%2d:", local->tm_min);
+    printf("%2d", local->tm_sec);
+    printf(" %d\n", local->tm_isdst);
+
+    data.year = local->tm_year + 1900;
+    data.month = local->tm_mon + 1;
+    data.day = local->tm_mday;
+    data.hour = local->tm_hour;
+    data.min = local->tm_min;
+    data.sec = local->tm_sec;
+    
+    /*charに変換*/
+
+    sprintf(data.str_year, "%d", data.year);
+    printf("%s", data.str_year);
+    sprintf(data.str_month, "%02d", data.month);
+    printf("%s", data.str_month);
+    sprintf(data.str_day, "%02d", data.day);
+    printf("%s", data.str_day);
+    sprintf(data.str_hour, "%02d", data.hour);
+    printf("%s", data.str_hour);
+    sprintf(data.str_min, "%02d", data.min);
+    printf("%s", data.str_min);
+    sprintf(data.str_sec, "%02d", data.sec);
+    printf("%s", data.str_sec);
+
+    printf("\n");
+    printf("\n");
+   /* 結合*/
+    char filename [50]="bmi";
+
+    printf("----------------------\n");
+    strcat(filename, data.str_year);
+    strcat(filename, data.str_month);
+    strcat(filename, data.str_day);
+    strcat(filename, ".dat");
+    printf("%s",filename);
+//return 0;
+ 
+/*
+    fprintf(filename,  "%s%s%s%s%s%s%s" ,  data.str_year, data.str_month, data.str_day, data.str_hour,  data.str_hour,  data.str_min, data.str_sec);
+printf("%s", filename);
+
+*/
     int i_menu;
     i_menu = show_menu();
 
     switch(i_menu){
     case REGISTER:
             printf("####  Registration  ####\n");
-
-
             flg.height=1;
             while (1) {
                 printf("Please input your height (cm):");
@@ -102,8 +170,17 @@ int main(int argc, const char * argv[]) {
            
             if(data.fat) printf("You are fat\n");
             else if(data.thin) printf("You are thin\n");
-            else printf("You are normal\n");    
-    
+            else printf("You are normal\n");
+
+            FILE *fp;
+            //char filename[]=;
+
+            //fp = fopen("bmi.dat","a+");
+            fp = fopen(filename,"a+");
+            fprintf(fp,  "%d-%d-%d-%d-%d-%d-%d\n" ,      data.year, data.month, data.day, data.hour,  data.hour,  data.min, data.sec);
+            fprintf(fp, "BMI=%4.1f FAT:%d NORMANL:%d THIN:%d\n", data.bmi, data.fat, data.normal, data.thin);
+            fclose(fp);
+
 
     break;
 
