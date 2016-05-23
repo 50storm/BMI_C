@@ -25,8 +25,6 @@
 #include <string.h>
 
 enum menu {REGISTER = 1 , DISPLAY = 2, EXIT = 9, ERR = -1  };
-
-
 struct bmi_data_type{
    int year;
    int month;
@@ -72,7 +70,8 @@ int main(int argc, const char * argv[]) {
 
     /* 現在時刻を取得 */
     timer = time(NULL);
-    local = localtime(&timer); 
+	local = localtime(&timer); 
+	/*
     printf("%4d/", local->tm_year + 1900);
     printf("%2d/", local->tm_mon + 1);
     printf("%2d ", local->tm_mday);
@@ -80,7 +79,8 @@ int main(int argc, const char * argv[]) {
     printf("%2d:", local->tm_min);
     printf("%2d", local->tm_sec);
     printf(" %d\n", local->tm_isdst);
-
+	*/
+	
     data.year = local->tm_year + 1900;
     data.month = local->tm_mon + 1;
     data.day = local->tm_mday;
@@ -89,7 +89,6 @@ int main(int argc, const char * argv[]) {
     data.sec = local->tm_sec;
     
     /*charに変換*/
-
     sprintf(data.str_year, "%d", data.year);
     printf("%s", data.str_year);
     sprintf(data.str_month, "%02d", data.month);
@@ -107,7 +106,6 @@ int main(int argc, const char * argv[]) {
     printf("\n");
    /* 結合*/
     char filename [50]="bmi";
-
     printf("----------------------\n");
     strcat(filename, data.str_year);
     strcat(filename, data.str_month);
@@ -157,9 +155,6 @@ printf("%s", filename);
                 else showErrMsg("poo", 0.0, data.poo);
            } 
             
-            
-            
-            
             data.bmi = data.weight*10000/(data.height*data.height);
             data.fat = (data.bmi>25.0);
             data.thin = (data.bmi<=18.5);
@@ -173,16 +168,13 @@ printf("%s", filename);
             else printf("You are normal\n");
 
             FILE *fp;
-            //char filename[]=;
-
-            //fp = fopen("bmi.dat","a+");
+		//fp = fopen("bmi.dat","a+");
+            //個別
             fp = fopen(filename,"a+");
-            fprintf(fp,  "%d-%d-%d-%d-%d-%d-%d\n" ,      data.year, data.month, data.day, data.hour,  data.hour,  data.min, data.sec);
+            fprintf(fp,  "%4d-%02d-%02d-%02d-%02d-%02d-%02d\n" ,      data.year, data.month, data.day, data.hour,  data.hour,  data.min, data.sec);
             fprintf(fp, "BMI=%4.1f FAT:%d NORMANL:%d THIN:%d\n", data.bmi, data.fat, data.normal, data.thin);
             fclose(fp);
-
-
-    break;
+            break;
 
     case DISPLAY:
     printf("Display\n");
@@ -193,17 +185,6 @@ printf("%s", filename);
     }
     return 0;
 
-
-
-
-/*
-    //書き込み
-    fprintf(fp, "BMI=%4.1f FAT:%d NORMANL:%d THIN:%d\n", bmi, fat, normal, thin);
-    
-    fclose(fp);
-
-    return 0;
-*/
 }
 
 int is_valid_input(double val){
@@ -228,11 +209,8 @@ void showErrMsg(const char *msg , double d_val, int i_val){
     
 }
 
-
-
 int show_menu(void){
     int i_menu;
-
     printf("======================================\n");
     printf("   Register BMI DATA(presskey:1)      \n");
     printf("   Disply BMI DATA(presskey:2)        \n");
