@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-#define DEBUG 1
+#define DEBUG 0
 #define println()(printf("\n"))
 
 /* enum */
@@ -46,9 +46,16 @@ struct bmi_data_type{
     int normal;
     int poo;    
     int steps;
+    int lack_steps;
 	double height;
     double weight;
     double bmi;
+    char *result_bmi;
+    char *result_poo;
+    char *result_steps;
+    
+
+
 };
 struct  input_date_type{
     int year;
@@ -232,15 +239,9 @@ int showAllData(){
 
 int isGreaterThan0(double val){
 	if(val <= 0.0 ){
-        printf("val <= 0.0 ");
-        println();
-        printf("%f",val);
-		return 0;
+        return 0;
 	}else{
-        printf("NOT val <= 0.0 ");
-        println();
-        printf("%f",val);
-		return 1;
+        return 1;
 	}
 }
 
@@ -248,7 +249,6 @@ int isGreaterThan0(double val){
 
 void registerData(struct bmi_data_type *data, char filename[]){
 	int ret;
-    //addYYYYMMDD(filename, &data);
     addYYYYMMDD(filename, data);
 
 	printf("####  Registration  ####\n");
@@ -313,12 +313,80 @@ void registerData(struct bmi_data_type *data, char filename[]){
         }  
     }
 	data->bmi = data->weight*10000/(data->height*data->height);
+
 	data->fat = (data->bmi>25.0);
 	data->thin = (data->bmi<=18.5);
-	data->normal = (!data->fat) && (!data->thin);
+   	data->normal = (!data->fat) && (!data->thin);
 
+/*
+日本肥満学会の判定基準(成人)
+指標  判定
+18.5未満  低体重(痩せ型)　
+18.5～25未満　  普通体重
+25～30未満 肥満(1度)
+30～35未満 肥満(2度)
+35～40未満 肥満(3度)
+40以上    肥満(4度)
+
+
+*/
+    if(data->bmi >= 40.0){
+        data->result_bmi = "Obesity Level 4"; 
+
+    }else if( data->bmi < 40.0 && data->bmi >= 35.0 ){
+        data->result_bmi = "Obesity Level 3"; 
+
+    }else if( data->bmi < 35.0 && data->bmi >= 30.0 ){
+        data->result_bmi = "Obesity Level 2"; 
+
+    }else if( data->bmi < 30.0 && data->bmi >= 25.0 ){
+        data->result_bmi = "Obesity Level 1"; 
+
+    }else if( data->bmi < 25.0 && data->bmi >= 18.5 ){
+        data->result_bmi = "Normal"; 
+     
+    }else if( data->bmi < 18.5 ){
+        data->result_bmi = "Thin"; 
+    }
+
+    //constipation
+    if(data->poo == 1){
+        data->result_poo = "not constipated";    
+    }else{
+        data->result_poo = "constipated";    
+    }
+
+//1日10000歩
+    data->lack_steps = 10000 - data->steps;
+    println();
+    printf("lacksteps:%d",  data->lack_steps);
+    println();
+    
+    if(data->lack_steps >= 0 ){
+        char tmpStr[10];
+        char strMsg[100] = "should walk more ";
+        char strSteps[]=" steps";
+        sprintf(tmpStr, "%d", data->lack_steps);
+        strcat(strMsg, tmpStr);
+        strcat(strMsg, strSteps);
+        
+        data->result_steps = strMsg;
+
+    }else{
+        data->result_steps ="walked well!";
+
+    }
+
+    
+
+
+/*
 	printf("BMI=%4.1f FAT:%d NORMANL:%d THIN:%d POO:%d STEPS:%d \n",
             data->bmi, data->fat, data->normal, data->thin, data->poo, data->steps);	
+*/
+    printf("BMI=%4.1f  RESULT:[%s][%s] Walked:[%dsteps][%s]  \n ", 
+            data->bmi, data->result_bmi, data->result_poo, data->steps, data->result_steps );    
+
 
 	int flg_save;
 	while (1) {
@@ -332,15 +400,25 @@ void registerData(struct bmi_data_type *data, char filename[]){
 			if(flg_save==1){
 				FILE *fp;
 				fp = fopen(filename,"w");
+                /*
 				fprintf(fp, "BMI=%4.1f FAT:%d NORMANL:%d THIN:%d POO:%d  STEPS:%d \n", 
                         data->bmi, data->fat, data->normal, data->thin, data->poo, data->steps);
+                */
+                fprintf(fp, "BMI=%4.1f  RESULT:[%s][%s] Walked:[%dsteps][%s]  \n ", 
+                              data->bmi, data->result_bmi, data->result_poo, data->steps, data->result_steps );    
+
 				fclose(fp);
 				printf("Your data has been saved.[filename:%s]" , filename);
 				println();
                 /*log*/
                 fp = fopen("bmi.dat","a+");
+                /*
                 fprintf(fp, "BMI=%4.1f FAT:%d NORMANL:%d THIN:%d POO:%d   STEPS:%d \n", 
                         data->bmi, data->fat, data->normal, data->thin, data->poo, data->steps);
+                */
+                fprintf(fp, "BMI=%4.1f  RESULT:[%s][%s] Walked:[%dsteps][%s]  \n ", 
+                              data->bmi, data->result_bmi, data->result_poo, data->steps, data->result_steps );    
+
                 fclose(fp);
             
 
