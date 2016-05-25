@@ -1,0 +1,5 @@
+Brad_Pitt 183.2 73.4
+Tom_Cruise 170.1 67.2
+Johnny_Depp 178.2 70.5
+Will_Smith 188.0 78.3
+Bruce_Willis 184.0 78.3

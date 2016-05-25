@@ -77,12 +77,11 @@ void addInYYYYMMDD(char [], struct input_date_type *);
 void registerData(struct bmi_data_type *, char[]);
 void writeDayData(struct bmi_data_type *, char []);
 void setStrInDate(struct input_date_type *);
-int showData(struct input_date_type *, char []);
 int showAllData();
 
 int main(int argc, const char * argv[]) {
 	struct bmi_data_type data;
-    struct input_date_type in_date;    
+    struct input_date_type in_date;
 
 
 	setDateTime(&data);
@@ -94,61 +93,28 @@ int main(int argc, const char * argv[]) {
 			break;
 
         case DISPLAY_DATA:
-            showData(&in_date,  filename);
-            break;
-
-		case DISPLAT_ALL_DATA:
-            showAllData();
-			break;
-		case EXIT:
-			printf("Bye!\n");
-			break;
-	}
-	return 0;
-}
-
-int showData(struct input_date_type *in_date, char filename[]){
-    
-            int ret;
-            while(1){
-                printf("Please input year[yyyy]:");
-                ret =scanf("%d", &in_date->year);
-                if(ret != 1){
-                    scanf("%*s");
-                    continue;
-                }else{
-                   if(in_date->year > 0 &&  in_date->year <= 9999 ) break;
-                   else showErrMsg("year",0.0,in_date->year);
-                }
-            } 
-            
-
-            while(1){
-                printf("Please input month[mm]:");
-                ret = scanf("%d", &in_date->month);
-                if(ret != 1){
-                    scanf("%*s");
-                    continue;
-                }else{
-                   if(in_date->month > 0 &&  in_date->month < 13 ) break;
-                   else showErrMsg("month",0.0,in_date->month);
-                }
-
+ 
+            printf("Please input year[yyyy]:\n");
+            scanf("%d", &in_date.year);
+/*
+            ret = scanf("%d", yyyy)
+            if(ret != 1){
+                scanf("%*s");
+                continue;
+            }else{
+                break;
             }
-            while(1){    
-                printf("Please input day[dd]:");
-                ret = scanf("%d", &in_date->day);
-                if(ret != 1){
-                    scanf("%*s");
-                    continue;
-                }else{
-                   if(in_date->day > 0 &&  in_date->day < 32 ) break;
-                   else showErrMsg("day",0.0,in_date->day);
-                }
 
-            }
-            setStrInDate(in_date);
-            addInYYYYMMDD(filename, in_date);
+*/
+
+            printf("Please input month[mm]:\n");
+            scanf("%d", &in_date.month);
+
+            printf("Please input day[dd]:\n");
+            scanf("%d", &in_date.day);
+
+            setStrInDate(&in_date);
+            addInYYYYMMDD(filename, &in_date);
 
 
             FILE *fpDay;
@@ -163,77 +129,110 @@ int showData(struct input_date_type *in_date, char filename[]){
                  printf("File[%s] does not exist.\n",filename);
                  return -1;
             }
-            char read_day_data [100];
+            char read_day_data [20];
+            char pg_data[20];
+            //printf("Read by fscanf() --------------------------------------\n");
             
+            //while(fscanf( fp, "%s", read_data) != EOF){
+            //    printf( "%s\n", read_data);
+            //}
 
-            printf("----------------------------------------\n");
+            printf("Read by fgets() ----------------------------------------\n");
             int j=0;
 
             while (fgets(read_day_data, 256, fpDay) != NULL) {
+            /*
+                printf("%c¥n", read_day_data[0]);
+                printf("%c¥n", read_day_data[1]);
+                printf("%c¥n", read_day_data[2]);
+                printf("%c¥n", read_day_data[3]);
+                printf("%c¥n", read_day_data[4]);
+                printf("%c¥n", read_day_data[5]);
+              */  
                 printf("%s", read_day_data);
-      
+                
+              //  fputs(read_day_data, fpDay);
+              // pg_data[j] = read_day_data[j];
+              // j=j+1;
+
+
             }
-            printf("----------------------------------------\n");
-            fclose(fpDay);
-            return 0;
+            //printf("%s", pg_data);//最後だけ
 
 
+            break;
+
+		case DISPLAT_ALL_DATA:
+            showAllData();
+			break;
+		case EXIT:
+			printf("Bye!\n");
+			break;
+	}
+	return 0;
 }
 
 int showAllData(){
-            printf("Displaying All BMI DATA...\n");
+            printf("Displaying log...\n");
 
             FILE *fp;
-            fp = fopen("bmi_disp.dat","r");
+            fp = fopen("bmi.dat","r");
             if( fp == NULL ){
-                 printf("File[bmi_disp.dat] does not exist.\n");
+                 printf("File[data.dat] does not exist.\n");
                  return -1;
             }
-            char buf [100];
-            printf("-------------------ALL BMI DATA-------------------\n");
+            char read_data [20];
+            printf("Read by fscanf() --------------------------------------\n");
+            char *wp;
 
-            while (fgets(buf, 256, fp) != NULL) {
-                printf("%s", buf);    
-            }
-            printf("--------------------------------------------------\n");
-            fclose(fp);
+            while(fscanf( fp, "%s", read_data) != EOF){
+                printf( "%s\n", read_data);
 
+                wp = strtok(read_data, "=");
 
-            double sum_bmi=0.0 , avg_bmi=0.0,  bmi=0, avg_steps=0.0;
-            int steps=0, sum_steps =0, cnt_bmi =0,cnt_steps=0 ;
-
-
-            fp = fopen("bmi_data.dat","r");
-            if( fp == NULL ){
-                 printf("File[bmi_data.dat] does not exist.\n");
-                 return -1;
-            }
-
-            while (fgets(buf, 256, fp) != NULL) {
-
-                int ret = sscanf(buf, "BMI=%lf STEPS=%d", &bmi, &steps );
-#if DEBUG == 1
-                printf("%d\n", ret);
-                printf("%lf\n", bmi);
-                printf("%d\n", steps);
-#endif  
-                if(ret==2){
-                    sum_bmi += bmi;cnt_bmi++;
-                    sum_steps += steps;cnt_steps++;
-
-
-                }
+                printf("%s\n", wp);
+                //printf("%c\n", wp[0]);
                 
-            }
-      
-            avg_bmi=sum_bmi / cnt_bmi;
-            avg_steps=sum_steps / cnt_steps;
-      
-            printf("Average[BMI=:%4.1f]\n", avg_bmi);
-            printf("Total[Steps=:%d\n", sum_steps);
-            printf("Average[Steps=:%4.1f]\n", avg_steps);
-            
 
+                /*
+                printf("%c\n", read_data[0]);
+                printf("%c\n", read_data[1]);
+                printf("%c\n", read_data[2]);
+                printf("%c\n", read_data[3]);
+                printf("%c\n", read_data[4]);
+                printf("%c\n", read_data[5]);
+                printf("%c\n", read_data[6]);
+                printf("%c\n", read_data[7]);
+                printf("%c\n", read_data[8]);
+                printf("%c\n", read_data[9]);
+                printf("%c\n", read_data[10]);
+                printf("%c\n", read_data[11]);
+                printf("%c\n", read_data[12]);
+                printf("%c\n", read_data[13]);
+                */
+
+            }
+/*
+            //printf("Read by fgets() ----------------------------------------\n");
+            while (fgets(read_data, 256, fp) != NULL) {
+                printf("%s", read_data);
+                printf("%c\n", read_data[0]);
+                printf("%c\n", read_data[1]);
+                printf("%c\n", read_data[2]);
+                printf("%c\n", read_data[3]);
+                printf("%c\n", read_data[4]);
+                printf("%c\n", read_data[5]);
+                printf("%c\n", read_data[6]);
+                printf("%c\n", read_data[7]);
+                printf("%c\n", read_data[8]);
+                printf("%c\n", read_data[9]);
+                printf("%c\n", read_data[10]);
+                printf("%c\n", read_data[11]);
+                printf("%c\n", read_data[12]);
+                printf("%c\n", read_data[13]);
+
+            }
+*/
 	return 0;
 }
 
@@ -359,12 +358,10 @@ void registerData(struct bmi_data_type *data, char filename[]){
 
 //1日10000歩
     data->lack_steps = 10000 - data->steps;
-#if DEBUG == 1
     println();
     printf("lacksteps:%d",  data->lack_steps);
     println();
-#endif
-
+    
     if(data->lack_steps >= 0 ){
         char tmpStr[10];
         char strMsg[100] = "should walk more ";
@@ -414,17 +411,15 @@ void registerData(struct bmi_data_type *data, char filename[]){
 				printf("Your data has been saved.[filename:%s]" , filename);
 				println();
                 /*log*/
-                fp = fopen("bmi_disp.dat","a+");
+                fp = fopen("bmi.dat","a+");
+                /*
+                fprintf(fp, "BMI=%4.1f FAT:%d NORMANL:%d THIN:%d POO:%d   STEPS:%d \n", 
+                        data->bmi, data->fat, data->normal, data->thin, data->poo, data->steps);
+                */
                 fprintf(fp, "BMI=%4.1f  RESULT:[%s][%s] Walked:[%dsteps][%s]  \n ", 
-                              data->bmi, data->result_bmi, data->result_poo, data->steps, data->result_steps );
+                              data->bmi, data->result_bmi, data->result_poo, data->steps, data->result_steps );    
+
                 fclose(fp);
-
-                fp = fopen("bmi_data.dat","a+");
-
-                fprintf(fp, "BMI=%4.1f STEPS=%d \n", 
-                        data->bmi,  data->steps);
-                
-                
             
 
 				break;
@@ -488,11 +483,11 @@ void showErrMsg(const char *msg , double d_val, int i_val){
 int show_menu(void){
 	int i_menu;
 	int ret;
-    while(1){
+	while(1){
 		printf("======================================\n");
 		printf("   Register BMI DATA(presskey:1)      \n");
 		printf("   Disply BMI DATA(presskey:2)        \n");
-        printf("   Disply ALL BMI DATA / AVG(BMI), SUM and AVG(Steps)(presskey:3)   \n");
+        printf("   Disply  ALL BMI DATA(presskey:3)   \n");
 		printf("   Exit(presskey:9)                   \n");
 		printf("======================================\n");
 		printf(":");
